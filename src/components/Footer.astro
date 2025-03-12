@@ -1,0 +1,48 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="col-span-1 md:col-span-2">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">About Us</h3>
+        <p class="mt-4 text-gray-600 dark:text-gray-400">
+          We're dedicated to providing the best content and experience for our users. Join our community and discover amazing stories.
+        </p>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Quick Links</h3>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">Home</a>
+          </li>
+          <li>
+            <a href="/items" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">Browse</a>
+          </li>
+          <li>
+            <a href="/profile" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">Profile</a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Contact</h3>
+        <ul class="mt-4 space-y-2">
+          <li class="text-gray-600 dark:text-gray-400">
+            <a href="mailto:support@example.com" class="hover:text-primary-600 dark:hover:text-primary-400">
+              support@example.com
+            </a>
+          </li>
+          <li class="text-gray-600 dark:text-gray-400">
+            Follow us on social media
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+      <p class="text-center text-gray-600 dark:text-gray-400">
+        © {currentYear} Your Company. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>

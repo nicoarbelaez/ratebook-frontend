@@ -1,0 +1,499 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { mockItems } from '../../data/mockItems';
+
+const { id } = Astro.params;
+const item = mockItems.find(item => item.id === parseInt(id));
+
+if (!item) {
+  return Astro.redirect('/404');
+}
+
+const mockReviews = [
+  {
+    id: 1,
+    author: "John Doe",
+    content: "Great content! Really enjoyed it and would recommend to others.",
+    rating: 4,
+    date: "2 days ago",
+    likes: 15,
+    dislikes: 2,
+    comments: [
+      {
+        id: 11,
+        author: "Jane Smith",
+        content: "I agree! The character development was amazing.",
+        date: "1 day ago",
+        likes: 8,
+        dislikes: 1,
+      },
+      {
+        id: 12,
+        author: "Mike Johnson",
+        content: "Yes, especially in the second half!",
+        date: "1 day ago",
+        likes: 5,
+        dislikes: 0,
+      }
+    ]
+  },
+  {
+    id: 2,
+    author: "Alice Brown",
+    content: "Interesting perspective on the genre. Looking forward to more like this.",
+    rating: 5,
+    date: "3 days ago",
+    likes: 23,
+    dislikes: 3,
+    comments: []
+  },
+  {
+    id: 3,
+    author: "Bob Wilson",
+    content: "Some good points, but I think it could have been better executed.",
+    rating: 3,
+    date: "4 days ago",
+    likes: 7,
+    dislikes: 4,
+    comments: [
+      {
+        id: 31,
+        author: "Carol Davis",
+        content: "Could you elaborate on what aspects you think needed improvement?",
+        date: "3 days ago",
+        likes: 12,
+        dislikes: 1,
+      }
+    ]
+  },
+  {
+    id: 4,
+    author: "Emma Thompson",
+    content: "A fresh take on the subject matter. The pacing was perfect.",
+    rating: 5,
+    date: "5 days ago",
+    likes: 19,
+    dislikes: 2,
+    comments: []
+  },
+  {
+    id: 5,
+    author: "David Chen",
+    content: "While the concept is interesting, the execution could use some work.",
+    rating: 3,
+    date: "6 days ago",
+    likes: 9,
+    dislikes: 5,
+    comments: []
+  }
+];
+
+const mockComments = [
+  {
+    id: 101,
+    author: "Sarah Johnson",
+    content: "Really enjoyed reading this! The insights were very helpful.",
+    date: "1 day ago",
+    likes: 12,
+    dislikes: 1,
+    replies: [
+      {
+        id: 102,
+        author: "Tom Wilson",
+        content: "Agreed! The practical examples were particularly useful.",
+        date: "1 day ago",
+        likes: 5,
+        dislikes: 0,
+        replies: []
+      }
+    ]
+  },
+  {
+    id: 103,
+    author: "Maria Garcia",
+    content: "Great discussion in the comments section!",
+    date: "2 days ago",
+    likes: 8,
+    dislikes: 1,
+    replies: []
+  }
+];
+
+// Function to calculate the total number of replies for a comment
+const getTotalReplies = (comment) => {
+  let total = comment.replies?.length || 0;
+  if (comment.replies) {
+    for (const reply of comment.replies) {
+      total += getTotalReplies(reply);
+    }
+  }
+  return total;
+};
+---
+
+<Layout title={item.title}>
+  <div class="pt-24 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Image and Basic Info -->
+        <div class="md:col-span-1">
+          <img
+            src={item.coverImage}
+            alt={item.title}
+            class="w-full rounded-lg shadow-lg"
+          />
+          <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Category</span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
+                {item.category}
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Rating</span>
+              <div class="flex items-center">
+                <div class="flex items-center text-yellow-400">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <span>{index < Math.floor(Number(item.rating)) ? '★' : '☆'}</span>
+                  ))}
+                </div>
+                <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">({item.rating})</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="md:col-span-2">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">{item.title}</h1>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+
+            <!-- Main Comments Section -->
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-8">
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Comments</h2>
+              
+              <!-- Comment Form -->
+              <div class="mb-8">
+                <form class="space-y-4" id="comment-form">
+                  <div>
+                    <label for="comment" class="sr-only">Write your comment</label>
+                    <textarea
+                      id="comment"
+                      name="comment"
+                      rows="3"
+                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      placeholder="Write your comment..."
+                    ></textarea>
+                  </div>
+                  <div class="flex justify-end">
+                    <button
+                      type="submit"
+                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                    >
+                      Post Comment
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Comments List -->
+              <div class="space-y-6" id="comments-container">
+                {mockComments.map((comment) => (
+                  <div class="comment-thread border-b border-gray-200 dark:border-gray-700 pb-6 last:border-0" data-comment-id={comment.id}>
+                    <p class="text-gray-600 dark:text-gray-400 mb-2">
+                      {comment.content}
+                    </p>
+                    <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                      <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                          <span>By {comment.author}</span>
+                          <span class="mx-2">•</span>
+                          <span>{comment.date}</span>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                          <button class="flex items-center space-x-1 text-gray-500 hover:text-green-500 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                            </svg>
+                            <span>{comment.likes}</span>
+                          </button>
+                          <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.105-1.79l-.05-.025A4 4 0 0011.055 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z" />
+                            </svg>
+                            <span>{comment.dislikes}</span>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="flex items-center space-x-4">
+                        <button
+                          class="text-primary-600 hover:text-primary-500 dark:text-primary-400 reply-button"
+                          data-comment-id={comment.id}
+                        >
+                          Reply
+                        </button>
+                        {comment.replies && comment.replies.length > 0 && (
+                          <button
+                            class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white flex items-center space-x-1 toggle-replies"
+                            data-comment-id={comment.id}
+                          >
+                            <span class="show-text">Show Replies ({getTotalReplies(comment)})</span>
+                            <span class="hide-text hidden">Hide Replies</span>
+                            <svg class="w-4 h-4 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Nested Comments */}
+                    {comment.replies && comment.replies.length > 0 && (
+                      <div class="replies-container ml-8 mt-4 space-y-4 border-l-2 border-gray-200 dark:border-gray-700 pl-4 hidden">
+                        {comment.replies.map((reply) => (
+                          <div class="reply-thread bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4" data-comment-id={reply.id}>
+                            <p class="text-gray-600 dark:text-gray-400 mb-2">
+                              {reply.content}
+                            </p>
+                            <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                              <div class="flex items-center space-x-4">
+                                <div class="flex items-center">
+                                  <span>By {reply.author}</span>
+                                  <span class="mx-2">•</span>
+                                  <span>{reply.date}</span>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                  <button class="flex items-center space-x-1 text-gray-500 hover:text-green-500 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                      <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                                    </svg>
+                                    <span>{reply.likes}</span>
+                                  </button>
+                                  <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                      <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.105-1.79l-.05-.025A4 4 0 0011.055 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z" />
+                                    </svg>
+                                    <span>{reply.dislikes}</span>
+                                  </button>
+                                </div>
+                              </div>
+                              <button
+                                class="text-primary-600 hover:text-primary-500 dark:text-primary-400 reply-button"
+                                data-comment-id={reply.id}
+                              >
+                                Reply
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <!-- Reviews Section -->
+              <div class="border-t border-gray-200 dark:border-gray-700 mt-12 pt-8">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Reviews</h2>
+                <div class="space-y-6">
+                  {mockReviews.map((review) => (
+                    <div class="review-thread border-b border-gray-200 dark:border-gray-700 pb-6 last:border-0">
+                      <div class="flex items-center mb-2">
+                        <div class="flex items-center text-yellow-400">
+                          {Array.from({ length: 5 }).map((_, index) => (
+                            <span>{index < review.rating ? '★' : '☆'}</span>
+                          ))}
+                        </div>
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">({review.rating}.0)</span>
+                      </div>
+                      <p class="text-gray-600 dark:text-gray-400 mb-2">
+                        {review.content}
+                      </p>
+                      <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        <div class="flex items-center space-x-4">
+                          <div class="flex items-center">
+                            <span>By {review.author}</span>
+                            <span class="mx-2">•</span>
+                            <span>{review.date}</span>
+                          </div>
+                          <div class="flex items-center space-x-4">
+                            <button class="flex items-center space-x-1 text-gray-500 hover:text-green-500 transition-colors">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                              </svg>
+                              <span>{review.likes}</span>
+                            </button>
+                            <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500 transition-colors">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.105-1.79l-.05-.025A4 4 0 0011.055 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z" />
+                              </svg>
+                              <span>{review.dislikes}</span>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                          <button
+                            class="text-primary-600 hover:text-primary-500 dark:text-primary-400 add-comment-button"
+                            data-review-id={review.id}
+                          >
+                            Add Comment
+                          </button>
+                          {review.comments.length > 0 && (
+                            <button
+                              class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white flex items-center space-x-1 toggle-comments"
+                              data-review-id={review.id}
+                            >
+                              <span class="show-text">Show Comments ({review.comments.length})</span>
+                              <span class="hide-text hidden">Hide Comments</span>
+                              <svg class="w-4 h-4 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Review Comments */}
+                      {review.comments.length > 0 && (
+                        <div class="comments-container ml-8 mt-4 space-y-4 border-l-2 border-gray-200 dark:border-gray-700 pl-4 hidden">
+                          {review.comments.map((comment) => (
+                            <div class="comment-thread bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                              <p class="text-gray-600 dark:text-gray-400 mb-2">
+                                {comment.content}
+                              </p>
+                              <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                                <div class="flex items-center space-x-4">
+                                  <div class="flex items-center">
+                                    <span>By {comment.author}</span>
+                                    <span class="mx-2">•</span>
+                                    <span>{comment.date}</span>
+                                  </div>
+                                  <div class="flex items-center space-x-4">
+                                    <button class="flex items-center space-x-1 text-gray-500 hover:text-green-500 transition-colors">
+                                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                                      </svg>
+                                      <span>{comment.likes}</span>
+                                    </button>
+                                    <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500 transition-colors">
+                                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.105-1.79l-.05-.025A4 4 0 0011.055 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z" />
+                                      </svg>
+                                      <span>{comment.dislikes}</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // Handle reply button clicks
+  document.querySelectorAll('.reply-button').forEach(button => {
+    button.addEventListener('click', () => {
+      const commentId = button.getAttribute('data-comment-id');
+      // Here you would typically show a reply form or modal
+      alert(`Reply to comment ${commentId}`);
+    });
+  });
+
+  // Handle add comment button clicks for reviews
+  document.querySelectorAll('.add-comment-button').forEach(button => {
+    button.addEventListener('click', () => {
+      const reviewId = button.getAttribute('data-review-id');
+      // Here you would typically show a comment form or modal
+      alert(`Add comment to review ${reviewId}`);
+    });
+  });
+
+  // Handle show/hide replies for comments
+  document.querySelectorAll('.toggle-replies').forEach(button => {
+    button.addEventListener('click', () => {
+      const commentThread = button.closest('.comment-thread, .reply-thread');
+      const repliesContainer = commentThread.querySelector('.replies-container');
+      const showText = button.querySelector('.show-text');
+      const hideText = button.querySelector('.hide-text');
+      const arrow = button.querySelector('svg');
+      
+      if (repliesContainer) {
+        const isHidden = repliesContainer.classList.contains('hidden');
+        
+        // Toggle visibility
+        repliesContainer.classList.toggle('hidden');
+        
+        // Toggle button text
+        showText.classList.toggle('hidden');
+        hideText.classList.toggle('hidden');
+        
+        // Rotate arrow
+        arrow.style.transform = isHidden ? 'rotate(180deg)' : '';
+        
+        // Add smooth transition
+        repliesContainer.style.maxHeight = isHidden ? `${repliesContainer.scrollHeight}px` : '0';
+      }
+    });
+  });
+
+  // Handle show/hide comments for reviews
+  document.querySelectorAll('.toggle-comments').forEach(button => {
+    button.addEventListener('click', () => {
+      const reviewThread = button.closest('.review-thread');
+      const commentsContainer = reviewThread.querySelector('.comments-container');
+      const showText = button.querySelector('.show-text');
+      const hideText = button.querySelector('.hide-text');
+      const arrow = button.querySelector('svg');
+      
+      if (commentsContainer) {
+        const isHidden = commentsContainer.classList.contains('hidden');
+        
+        // Toggle visibility
+        commentsContainer.classList.toggle('hidden');
+        
+        // Toggle button text
+        showText.classList.toggle('hidden');
+        hideText.classList.toggle('hidden');
+        
+        // Rotate arrow
+        arrow.style.transform = isHidden ? 'rotate(180deg)' : '';
+        
+        // Add smooth transition
+        commentsContainer.style.maxHeight = isHidden ? `${commentsContainer.scrollHeight}px` : '0';
+      }
+    });
+  });
+
+  // Handle comment form submission
+  document.getElementById('comment-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const commentText = e.target.comment.value;
+    if (commentText.trim()) {
+      // Here you would typically send the comment to the server
+      alert('Comment submitted: ' + commentText);
+      e.target.reset();
+    }
+  });
+</script>
+
+<style>
+  .replies-container,
+  .comments-container {
+    transition: max-height 0.3s ease-in-out;
+    overflow: hidden;
+  }
+</style>

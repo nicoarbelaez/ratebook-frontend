@@ -1,0 +1,113 @@
+---
+import { Sun, Moon } from '../components/Icons';
+---
+
+<nav class="fixed w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex">
+        <div class="flex-shrink-0 flex items-center">
+          <a href="/" class="text-xl font-bold text-primary-600 dark:text-primary-400">
+            App
+          </a>
+        </div>
+        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+          <a href="/" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 dark:text-white">
+            Home
+          </a>
+          <a href="/items" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+            Items
+          </a>
+          <a href="/profile" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+            Profile
+          </a>
+        </div>
+      </div>
+      <div class="flex items-center">
+        <button
+          id="theme-toggle"
+          type="button"
+          class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
+        >
+          <Sun className="w-5 h-5 hidden dark:block" />
+          <Moon className="w-5 h-5 block dark:hidden" />
+        </button>
+        <a
+          href="/login"
+          class="hidden sm:inline-flex ml-4 items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+        >
+          Sign in
+        </a>
+        <button
+          id="mobile-menu-button"
+          type="button"
+          class="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+        >
+          <span class="sr-only">Open main menu</span>
+          <svg
+            class="block h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="sm:hidden hidden" id="mobile-menu">
+    <div class="pt-2 pb-3 space-y-1">
+      <a
+        href="/"
+        class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+      >
+        Home
+      </a>
+      <a
+        href="/items"
+        class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+      >
+        Items
+      </a>
+      <a
+        href="/profile"
+        class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+      >
+        Profile
+      </a>
+      <a
+        href="/login"
+        class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+      >
+        Sign in
+      </a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const themeToggle = document.getElementById('theme-toggle');
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  themeToggle?.addEventListener('click', () => {
+    window.themeToggle();
+  });
+
+  mobileMenuButton?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+    const expanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+    mobileMenuButton.setAttribute('aria-expanded', (!expanded).toString());
+  });
+</script>

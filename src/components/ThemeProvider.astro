@@ -1,0 +1,15 @@
+---
+---
+<div id="theme-provider" class="hidden"></div>
+
+<script>
+  const themeToggle = () => {
+    const root = document.documentElement;
+    const isDark = root.classList.contains('dark');
+    
+    root.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  };
+
+  window.themeToggle = themeToggle;
+</script>
